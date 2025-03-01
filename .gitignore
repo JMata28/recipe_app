@@ -1,0 +1,24 @@
+#Ignore Python files with dummy data
+private_variables.py
+
+# Ignore Python compiled files
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore environment files
+.env
+venv/
+
+# Ignore log files
+*.log
+
+# Ignore IDE files
+.vscode/
+*.swp
+
+#Ignore other files created by the Flask app
+instance/
+
+#Ignore macOS metadata files
+.DS_Store
