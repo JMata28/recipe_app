@@ -17,7 +17,7 @@ venv/
 .vscode/
 *.swp
 
-#Ignore other files created by the Flask app
+#Ignore other files created by the Flask app, including the sqlite database
 instance/
 
 #Ignore macOS metadata files
