@@ -8,8 +8,11 @@
                 <small class="text-muted">{{ post.date_posted }}</small>
             </div>
             <h2><a class="article-title" href="#">{{ post.dish_name }}</a></h2>
-            <p class="article-content">{{ post.recipe }}</p>
-            </div>
+            <dl class="row">
+                <dt class="col-sm-3">Ingredients</dt>
+                <dd class="col-sm-9">{{ post.ingredients }}</dd>
+                <dt class="col-sm-3">Instructions</dt>
+                <dd class="col-sm-9">{{ post.recipe }}</dd>
         </article>
     {% endfor %}
 {% endblock content %}

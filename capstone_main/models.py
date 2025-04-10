@@ -22,6 +22,7 @@ class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     dish_name = db.Column(db.String(150), nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc)) #corrected for the deprecation of datetime.utcnow
+    ingredients = db.Column(db.Text, nullable =  False)
     recipe = db.Column(db.Text, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
