@@ -1,17 +1,18 @@
 import os
 import secrets
 from PIL import Image
-from flask import render_template, url_for, flash, redirect, request
+from flask import render_template, url_for, flash, redirect, request, abort
 from capstone_main import app, db, bcrypt
 from capstone_main.models import User, Recipe
-from capstone_main.forms import RegistrationForm, LoginForm, UpdateAccountForm
+from capstone_main.forms import RegistrationForm, LoginForm, UpdateAccountForm, RecipeForm
 from capstone_main.private_variables import *
 from flask_login import login_user, current_user, logout_user, login_required
 
 @app.route("/")
 @app.route("/home")
 def home_page():
-    return render_template("home.html", title="Home Page", posts=posts)
+    recipes = Recipe.query.all()
+    return render_template("home.html", title="Home Page", posts=recipes)
 
 @app.route("/about")
 def about_page():
@@ -82,3 +83,54 @@ def account_page():
         form.email.data = current_user.email #pre-fills out the email in the form
     image_file =  url_for('static', filename=current_user.image_file)
     return render_template('account.html', title="Account", image_file=image_file, form=form)
+
+@app.route("/recipe/new", methods=['GET', 'POST'])
+@login_required
+def new_recipe():
+    form = RecipeForm()
+    if form.validate_on_submit():
+        new_dish = Recipe(dish_name=form.recipe_name.data, recipe=form.recipe.data, author=current_user)
+        db.session.add(new_dish)
+        db.session.commit()
+        flash('Your new recipe has been posted!', 'success')
+        return redirect(url_for('home_page'))
+    return render_template('create_recipe.html', title='New Recipe',
+                           form=form, legend='New Recipe')
+
+
+@app.route("/recipe/<int:recipe_id>")
+def recipe_page(recipe_id):
+    recipe = Recipe.query.get_or_404(recipe_id)
+    return render_template('recipe.html', title=recipe.dish_name, post=recipe)
+
+
+@app.route("/recipe/<int:recipe_id>/update", methods=['GET', 'POST'])
+@login_required
+def update_recipe(recipe_id):
+    recipe = Recipe.query.get_or_404(recipe_id)
+    if recipe.author != current_user:
+        abort(403)
+    form = RecipeForm()
+    if form.validate_on_submit():
+        recipe.dish_name = form.recipe_name.data
+        recipe.recipe = form.recipe.data
+        db.session.commit()
+        flash('Your recipe has been updated!', 'success')
+        return redirect(url_for('recipe_page', recipe_id=recipe.id))
+    elif request.method == 'GET':
+        form.recipe_name.data = recipe.dish_name
+        form.recipe.data = recipe.recipe
+    return render_template('create_recipe.html', title='Update Recipe',
+                           form=form, legend='Update Recipe')
+
+
+@app.route("/recipe/<int:recipe_id>/delete", methods=['POST'])
+@login_required
+def delete_recipe(recipe_id):
+    recipe = Recipe.query.get_or_404(recipe_id)
+    if recipe.author != current_user:
+        abort(403)
+    db.session.delete(recipe)
+    db.session.commit()
+    flash('Your recipe has been deleted!', 'success')
+    return redirect(url_for('home_page'))
