@@ -11,7 +11,8 @@ from flask_login import login_user, current_user, logout_user, login_required
 @app.route("/")
 @app.route("/home")
 def home_page():
-    recipes = Recipe.query.all()
+    page = request.args.get('page', 1, type=int)
+    recipes = Recipe.query.order_by(Recipe.date_posted.asc()).paginate(page=page, per_page=5)
     return render_template("home.html", title="Home Page", posts=recipes)
 
 @app.route("/about")
@@ -58,7 +59,7 @@ def save_picture(form_picture):
     picture_fn = random_hex + f_ext
     picture_path = os.path.join(app.root_path, 'static', picture_fn)
 
-    output_size = (125, 125) 
+    output_size = (500, 500) 
     i = Image.open(form_picture)
     i.thumbnail(output_size)
     i.save(picture_path)
@@ -134,3 +135,12 @@ def delete_recipe(recipe_id):
     db.session.commit()
     flash('Your recipe has been deleted!', 'success')
     return redirect(url_for('home_page'))
+
+@app.route("/user/<string:username>")
+def user_recipes(username):
+    page = request.args.get('page', 1, type=int)
+    user = User.query.filter_by(username=username).first_or_404()
+    recipes = Recipe.query.filter_by(author=user)\
+        .order_by(Recipe.date_posted.asc())\
+        .paginate(page=page, per_page=5)
+    return render_template('user_recipes.html', posts=recipes, user=user)
