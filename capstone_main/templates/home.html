@@ -1,37 +1,22 @@
 {% extends "layout.html" %}
 {% block content %}
-    {% for post in posts.items %}
-        <article class="media content-section">
-            <img class="rounded-circle article-img" src="{{ url_for('static', filename=post.author.image_file) }}">
-            <div class="media-body">
-            <div class="article-metadata">
-                <a class="mr-2" href="{{ url_for('user_recipes', username=post.author.username) }}">{{ post.author.username }}</a>
-                <small class="text-muted">{{ post.date_posted.strftime('%Y-%m-%d') }}</small>
-            </div>
-            <h2><a class="article-title" href="{{ url_for('recipe_page', recipe_id=post.id) }}">{{ post.dish_name }}</a></h2>
-            <div class="card mb-3">
-                <div class="row g-0">
-                  <div class="col-md-4">
-                    <img src="{{ post.pic }}" class="img-fluid rounded-start" alt="...">
-                  </div>
-                  <div class="col-md-8">
+    <article class="media content-section">
+        <div class="d-flex flex-wrap justify-content-start gap-3">
+            {% for post in posts.items %}
+                <div class="card" style="width: 18rem;">
+                    <img src="{{ url_for('static', filename='recipe_pictures/' + post.image_file)}}" class="card-img-top .img-fluid" style="height:250px; object-fit: cover;" alt="...">
                     <div class="card-body">
-                        <dl class="row">
-                            <dt class="col-sm-3">Ingredients</dt>
-                            <dd class="col-sm-9">{{ post.ingredients }}</dd>
-                            <dt class="col-sm-3">Time Needed</dt>
-                            <dd class="col-sm-9">{{ post.time }}</dd>
-                            <dt class="col-sm-3">Instructions</dt>
-                            <dd class="col-sm-9">{{ post.recipe }}</dd> 
-                            <dt class="col-sm-3">Warnings</dt>
-                            <dd class="col-sm-9">{{ post.warnings }}</dd>
-                        </dl>
+                        <h5 class="card-title">{{ post.dish_name}}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            <a href="{{ url_for('user_recipes', username=post.author.username)}}">Recipe by: {{ post.author.username }}</a>
+                        </h6>
+                        <p class="card-text">Prep time: {{ post.time_needed }}</p>
+                        <a href="{{ url_for('recipe_page', recipe_id=post.id)}}" class="btn btn-primary">View Recipe</a>
                     </div>
-                  </div>
-                </div>
-            </div>
-        </article>
-    {% endfor %}
+                    </div>
+            {% endfor %}
+        </div>
+    </article>
     {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
         {% if page_num %}
             {% if posts.page == page_num %}

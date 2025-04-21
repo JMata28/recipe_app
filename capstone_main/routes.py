@@ -29,7 +29,7 @@ def register_page():
         user = User(username=form.username.data, email=form.email.data, password=hashed_password)
         db.session.add(user)
         db.session.commit()
-        flash(f'Account created for {form.username.data}! You can now log in.', 'success')
+        flash(f'Account created for {form.username.data}!', 'success')
         return redirect(url_for('home_page'))
     return render_template("register.html", title="Register", form=form)
 
@@ -53,12 +53,15 @@ def logout_page():
     logout_user()
     return redirect(url_for('home_page'))
 
-def save_picture(form_picture):
+def save_picture(form_picture, is_recipe_pic):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
     picture_fn = random_hex + f_ext
-    picture_path = os.path.join(app.root_path, 'static', picture_fn)
-
+    if is_recipe_pic == True:
+        picture_path = os.path.join(app.root_path, 'static/recipe_pictures', picture_fn)
+    else:
+        picture_path = os.path.join(app.root_path, 'static/profile_pictures', picture_fn)
+    
     output_size = (500, 500) 
     i = Image.open(form_picture)
     i.thumbnail(output_size)
@@ -72,7 +75,7 @@ def account_page():
     form = UpdateAccountForm()
     if form.validate_on_submit():
         if form.picture.data: 
-            picture_file = save_picture(form.picture.data)
+            picture_file = save_picture(form.picture.data, False)
             current_user.image_file =  picture_file
         current_user.username = form.username.data
         current_user.email = form.email.data
@@ -82,7 +85,7 @@ def account_page():
     elif request.method == 'GET':
         form.username.data = current_user.username #pre-fills out the username in the form
         form.email.data = current_user.email #pre-fills out the email in the form
-    image_file =  url_for('static', filename=current_user.image_file)
+    image_file =  url_for('static', filename='profile_pictures/' + current_user.image_file)
     return render_template('account.html', title="Account", image_file=image_file, form=form)
 
 @app.route("/recipe/new", methods=['GET', 'POST'])
@@ -90,7 +93,11 @@ def account_page():
 def new_recipe():
     form = RecipeForm()
     if form.validate_on_submit():
-        new_dish = Recipe(dish_name=form.recipe_name.data, recipe=form.recipe.data, author=current_user)
+        if form.dish_picture.data: 
+            dish_picture_file = save_picture(form.dish_picture.data, True)
+        else:
+            dish_picture_file = 'default_recipe_pic.png' 
+        new_dish = Recipe(dish_name=form.recipe_name.data, time_needed=form.time_needed.data, serves=form.serves.data, ingredients=form.ingredients.data, recipe=form.instructions.data, image_file=dish_picture_file, author=current_user)
         db.session.add(new_dish)
         db.session.commit()
         flash('Your new recipe has been posted!', 'success')

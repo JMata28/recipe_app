@@ -10,7 +10,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    image_file = db.Column(db.String(120), nullable=False, default='default_profile_pic.jpg')
+    image_file = db.Column(db.String(120), nullable=False, default='default_profile_pic.png')
     password = db.Column(db.String(60), nullable=False)
     recipes = db.relationship('Recipe', backref='author', lazy=True)
 
@@ -22,8 +22,11 @@ class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     dish_name = db.Column(db.String(150), nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc)) #corrected for the deprecation of datetime.utcnow
-    #ingredients = db.Column(db.Text, nullable =  False)
+    time_needed = db.Column(db.String(100), nullable=False)
+    serves = db.Column(db.Integer, nullable= False)
+    ingredients = db.Column(db.Text, nullable =  False)
     recipe = db.Column(db.Text, nullable=False)
+    image_file = db.Column(db.String(120), nullable=False, default='default_recipe_pic.png')
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):

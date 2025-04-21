@@ -1,10 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="content-section">
-    <form method="POST" action="">
+    <form method="POST" action="" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">{{ legend }}</legend>
+            <!-- Recipe Name Field -->
             <div class="form-group">
                 {{ form.recipe_name.label(class="form-control-label") }}
                 {% if form.recipe_name.errors %}
@@ -18,20 +19,74 @@
                     {{ form.recipe_name(class="form-control form-control-lg") }}
                 {% endif %}
             </div>
+            <!-- Time Needed Field -->
             <div class="form-group">
-                {{ form.recipe.label(class="form-control-label") }}
-                {% if form.recipe.errors %}
-                    {{ form.recipe(class="form-control form-control-lg is-invalid") }}
+                {{ form.time_needed.label(class="form-control-label") }}
+                {% if form.time_needed.errors %}
+                    {{ form.time_needed(class="form-control form-control-lg is-invalid") }}
                     <div class="invalid-feedback">
-                        {% for error in form.recipe.errors %}
+                        {% for error in form.time_needed.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
                 {% else %}
-                    {{ form.recipe(class="form-control form-control-lg") }}
+                    {{ form.time_needed(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <!-- Serves Field -->
+            <div class="form-group">
+                {{ form.serves.label(class="form-control-label") }}
+                {% if form.serves.errors %}
+                    {{ form.serves(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.serves.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.serves(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <!-- Ingredients Field -->
+            <div class="form-group">
+                {{ form.ingredients.label(class="form-control-label") }}
+                {% if form.ingredients.errors %}
+                    {{ form.ingredients(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.ingredients.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.ingredients(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <!-- Instructions Field -->
+            <div class="form-group">
+                {{ form.instructions.label(class="form-control-label") }}
+                {% if form.instructions.errors %}
+                    {{ form.instructions(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.instructions.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.instructions(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <!-- Dish Picture Field -->
+            <div class="form-group">
+                {{ form.dish_picture.label() }}
+                {{ form.dish_picture(class="form-control-file") }}
+                {% if form.dish_picture.errors %}
+                    {% for error in form.dish_picture.errors %}
+                        <span class="text-danger">{{ error }}</span></br>
+                    {% endfor %}
                 {% endif %}
             </div>
         </fieldset>
+        <!-- Instructions Field -->
         <div class="form-group">
             {{ form.submit(class="btn btn-outline-info") }}
         </div>

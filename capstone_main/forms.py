@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, IntegerField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from capstone_main.models import User
 
@@ -55,5 +55,9 @@ class UpdateAccountForm(FlaskForm):
             
 class RecipeForm(FlaskForm):
     recipe_name = StringField('Recipe Name', validators=[DataRequired()])
-    recipe = TextAreaField('Recipe', validators=[DataRequired()])
+    time_needed = StringField('Time Needed for Preparation', validators=[DataRequired()])
+    serves = IntegerField('Number of servings', validators=[DataRequired()])
+    ingredients = StringField('Ingredients (please include amounts)', validators=[DataRequired()])
+    instructions = TextAreaField('Recipe Instructions', validators=[DataRequired()]) #recipe
+    dish_picture = FileField('Upload a picture of your dish!', validators=[FileAllowed(['jpg', 'jpeg', 'png'])])
     submit = SubmitField('Post Recipe')

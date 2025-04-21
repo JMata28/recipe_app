@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
     <article class="media content-section">
-        <img class="rounded-circle article-img" src="{{ url_for('static', filename=post.author.image_file) }}">
+        <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pictures/' + post.author.image_file) }}">
         <div class="media-body">
         <div class="article-metadata">
             <a class="mr-2" href="{{ url_for('user_recipes', username=post.author.username) }}">{{ post.author.username }}</a>
@@ -17,15 +17,17 @@
         <div class="card mb-3">
             <div class="row g-0">
                 <div class="col-md-4">
-                <img src="{{ post.pic }}" class="img-fluid rounded-start" alt="...">
+                <img src="{{ url_for('static', filename='recipe_pictures/' + post.image_file) }}" class="img-fluid rounded-start" alt="...">
                 </div>
                 <div class="col-md-8">
                 <div class="card-body">
                     <dl class="row">
+                        <dt class="col-sm-3">Time Needed</dt>
+                        <dd class="col-sm-9">{{ post.time_needed }}</dd>
+                        <dt class="col-sm-3">Serves</dt>
+                        <dd class="col-sm-9">{{ post.time_needed }} Servings </dd>
                         <dt class="col-sm-3">Ingredients</dt>
                         <dd class="col-sm-9">{{ post.ingredients }}</dd>
-                        <dt class="col-sm-3">Time Needed</dt>
-                        <dd class="col-sm-9">{{ post.time }}</dd>
                         <dt class="col-sm-3">Instructions</dt>
                         <dd class="col-sm-9">{{ post.recipe }}</dd> 
                         <dt class="col-sm-3">Warnings</dt>
