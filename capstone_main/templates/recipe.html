@@ -19,21 +19,28 @@
                 <div class="col-md-4">
                 <img src="{{ url_for('static', filename='recipe_pictures/' + post.image_file) }}" class="img-fluid rounded-start" alt="...">
                 </div>
-                <div class="col-md-8">
-                <div class="card-body">
+                <div class="card-body flex-grow-1 col-md-8 d-flex flex-column position-relative">
                     <dl class="row">
                         <dt class="col-sm-3">Time Needed</dt>
                         <dd class="col-sm-9">{{ post.time_needed }}</dd>
                         <dt class="col-sm-3">Serves</dt>
-                        <dd class="col-sm-9">{{ post.time_needed }} Servings </dd>
+                        <dd class="col-sm-9">{{ post.serves }} Servings </dd>
                         <dt class="col-sm-3">Ingredients</dt>
                         <dd class="col-sm-9">{{ post.ingredients }}</dd>
                         <dt class="col-sm-3">Instructions</dt>
                         <dd class="col-sm-9">{{ post.recipe }}</dd> 
                         <dt class="col-sm-3">Warnings</dt>
                         <dd class="col-sm-9">{{ post.warnings }}</dd>
+                    </button>
                     </dl>
-                </div>
+                    {% if current_user.is_authenticated %}
+                     <!-- Save button -->
+                    <button type="button" class="btn btn-success position-absolute bottom-0 end-0 m-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark" viewBox="0 0 16 16">
+                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
+                        </svg>
+                    </button>
+                    {% endif %}
                 </div>
             </div>
         </div>

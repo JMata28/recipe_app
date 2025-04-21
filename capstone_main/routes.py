@@ -121,13 +121,22 @@ def update_recipe(recipe_id):
     form = RecipeForm()
     if form.validate_on_submit():
         recipe.dish_name = form.recipe_name.data
-        recipe.recipe = form.recipe.data
+        recipe.time_needed = form.time_needed.data
+        recipe.serves = form.serves.data
+        recipe.ingredients = form.ingredients.data
+        recipe.recipe = form.instructions.data
+        if form.dish_picture.data: 
+            dish_picture_file = save_picture(form.dish_picture.data, True)
+            recipe.image_file = dish_picture_file
         db.session.commit()
         flash('Your recipe has been updated!', 'success')
         return redirect(url_for('recipe_page', recipe_id=recipe.id))
     elif request.method == 'GET':
         form.recipe_name.data = recipe.dish_name
-        form.recipe.data = recipe.recipe
+        form.time_needed.data = recipe.time_needed
+        form.serves.data =  recipe.serves
+        form.ingredients.data = recipe.ingredients
+        form.instructions.data=recipe.recipe
     return render_template('create_recipe.html', title='Update Recipe',
                            form=form, legend='Update Recipe')
 
