@@ -59,10 +59,15 @@
                   <h3>Quick Menu</h3>
                   <p class='text-muted'>Choose an option below.
                     <ul class="list-group">
-                      <li class="list-group-item list-group-item-light">Feed</li>
-                      <li class="list-group-item list-group-item-light">Saved Recipes</li>
-                      <li class="list-group-item list-group-item-light">Your Recipes</li>
-                      <li class="list-group-item list-group-item-light">etc.</li>
+                      <li class="list-group-item list-group-item-light">
+                        <a href="{{ url_for('home_page') }}">Feed</a>
+                      </li>
+                      <li class="list-group-item list-group-item-light">
+                        <a href="{{ url_for('saved_recipes') }}"> Saved Recipes </a>
+                      </li>
+                      <li class="list-group-item list-group-item-light">
+                        <a href="{{ url_for('user_recipes', username=current_user.username )}}"> Your Recipes </a>
+                      </li>
                     </ul>
                   </p>
                 </div>

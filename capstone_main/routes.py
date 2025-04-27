@@ -109,8 +109,14 @@ def new_recipe():
 @app.route("/recipe/<int:recipe_id>")
 def recipe_page(recipe_id):
     recipe = Recipe.query.get_or_404(recipe_id)
-    return render_template('recipe.html', title=recipe.dish_name, post=recipe)
-
+    if current_user.is_authenticated:
+        saved_status='unsaved'
+        for saved_recipe in current_user.saved_recipes:
+            if saved_recipe.id == recipe_id:
+                saved_status='saved'
+        return render_template('recipe.html', title=recipe.dish_name, post=recipe, saved_status = saved_status)
+    else: 
+        return render_template('recipe.html', title=recipe.dish_name, post=recipe)
 
 @app.route("/recipe/<int:recipe_id>/update", methods=['GET', 'POST'])
 @login_required
@@ -159,4 +165,35 @@ def user_recipes(username):
     recipes = Recipe.query.filter_by(author=user)\
         .order_by(Recipe.date_posted.asc())\
         .paginate(page=page, per_page=5)
-    return render_template('user_recipes.html', posts=recipes, user=user)
+    return render_template('display_recipes.html', posts=recipes, user=user, recipe_type = 'user_recipes')
+
+@app.route("/user/saved_recipes")
+def saved_recipes():
+    page = request.args.get('page', 1, type=int)
+    recipes = Recipe.query.filter(Recipe.users_who_saved.contains(current_user)).order_by(Recipe.date_posted.asc()).paginate(page=page, per_page=5) #the implementation of the .filter and the .contains methods was explained by ChatGPT
+    return render_template('display_recipes.html', posts=recipes, user=current_user, recipe_type = 'saved_recipes')
+
+@app.route("/save_recipe/<int:recipe_id>", methods=['POST'])
+@login_required
+def save_recipe(recipe_id):
+    recipe = Recipe.query.get_or_404(recipe_id)
+    if recipe in current_user.saved_recipes:
+        flash('You have already saved this recipe.', 'info')
+    else: 
+        current_user.saved_recipes.append(recipe)
+        db.session.commit()
+        flash('Recipe added to your saved recipes!', 'success')
+    return redirect(request.referrer or url_for('saved_recipes'))   #The request.referrer method was a good ChatGPT suggestion
+
+@app.route("/unsave_recipe/<int:recipe_id>", methods=['POST'])
+@login_required
+def unsave_recipe(recipe_id):
+    recipe = Recipe.query.get_or_404(recipe_id)
+    if recipe in current_user.saved_recipes:
+        current_user.saved_recipes.remove(recipe)
+        db.session.commit()
+        flash('Recipe removed from your saved recipes!', 'success')
+    else:
+        flash('This recipe is already not in your saved recipes.', 'info')
+    return redirect(request.referrer or url_for('saved_recipes')) #The request.referrer method was a good ChatGPT suggestion
+
