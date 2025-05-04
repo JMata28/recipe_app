@@ -29,10 +29,17 @@
                         <dd class="col-sm-9">{{ post.ingredients }}</dd>
                         <dt class="col-sm-3">Instructions</dt>
                         <dd class="col-sm-9">{{ post.recipe }}</dd> 
-                        <dt class="col-sm-3">Warnings</dt>
+                        <dt class="col-sm-3">Similar Recipes</dt>
                         <dd class="col-sm-9">{{ post.warnings }}</dd>
-                    </button>
                     </dl>
+                    <div class="d-flex justify-content-start align-items-center gap-3 mt-3"> <!-- class obtained from ChatGPT-->
+                        <a href="{{ first_link }}">
+                            <img src="{{ first_thumbnail }}" class="img-thumbnail rounded float-start" style="width: 200px; height: auto;" alt="Thumbnail">
+                        </a>
+                        <a href="{{ second_link }}">
+                            <img src="{{ second_thumbnail }}" class="img-thumbnail rounded float-end" style="width: 200px; height: auto;" alt="Thumbnail">
+                        </a>
+                    </div>
                     {% if current_user.is_authenticated %}
                         {% if saved_status == 'saved' %}
                         <!-- Unsave button -->
