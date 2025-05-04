@@ -243,3 +243,10 @@ def ai_recipe(dish_name):
         form.instructions.data= similar_recipe.instructions
     return render_template('create_recipe.html', title='AI Recipe',
                            form=form, legend='New AI-Generated Recipe')
+
+@app.route("/search", methods=['GET', 'POST'])
+def search_recipe():
+    dish_name = request.form.get('dish_name') #to get the data from the search bar form item in the html
+    page = request.args.get('page', 1, type=int)
+    recipes_found = Recipe.query.filter_by(dish_name=dish_name).order_by(Recipe.date_posted.asc()).paginate(page=page, per_page=5)
+    return render_template('display_recipes.html', title='Recipe Search Results', posts=recipes_found, user=current_user, recipe_type='search_recipes', dish_name_entered=dish_name)

@@ -5,6 +5,8 @@
     <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pictures/' + user.image_file) }}">
   {% elif recipe_type == 'saved_recipes' %}
     <h1 class="mb-3"> Recipes saved by {{ user.username }} ({{ posts.total }}) </h1>
+  {% elif recipe_type == 'search_recipes' %}
+    <h1 class="mb-3"> Search results for {{ dish_name_entered }} ({{ posts.total }}) </h1>
   {% endif %}
     {% for post in posts.items %}
         <article class="media content-section">
