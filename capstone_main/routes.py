@@ -1,18 +1,20 @@
 import os
 import secrets
+import requests
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
-from capstone_main import app, db, bcrypt
+from capstone_main import app, db, bcrypt, client
 from capstone_main.models import User, Recipe
 from capstone_main.forms import RegistrationForm, LoginForm, UpdateAccountForm, RecipeForm
-from capstone_main.private_variables import *
 from flask_login import login_user, current_user, logout_user, login_required
+from pydantic import BaseModel
+
 
 @app.route("/")
 @app.route("/home")
 def home_page():
     page = request.args.get('page', 1, type=int)
-    recipes = Recipe.query.order_by(Recipe.date_posted.asc()).paginate(page=page, per_page=5)
+    recipes = Recipe.query.order_by(Recipe.date_posted.asc()).paginate(page=page, per_page=8)
     return render_template("home.html", title="Home Page", posts=recipes)
 
 @app.route("/about")
@@ -81,7 +83,7 @@ def account_page():
         current_user.email = form.email.data
         db.session.commit()
         flash('Your account has been updated!', 'success')
-        return redirect(url_for('account_page')) #causes the browser to send a GET request to avoide the POST GET REDIRECT PATTERN
+        return redirect(url_for('account_page')) #causes the browser to send a GET request to avoid the POST GET REDIRECT PATTERN
     elif request.method == 'GET':
         form.username.data = current_user.username #pre-fills out the username in the form
         form.email.data = current_user.email #pre-fills out the email in the form
@@ -105,16 +107,32 @@ def new_recipe():
     return render_template('create_recipe.html', title='New Recipe',
                            form=form, legend='New Recipe')
 
+#Format for quering the Google Gemini in JSON format was obtained from Google Gemini Documentation: https://ai.google.dev/gemini-api/docs/structured-output?lang=python
+class Similar_recipes(BaseModel): 
+  time_needed: str
+  serves: int
+  ingredients: str
+  instructions: str
 
-@app.route("/recipe/<int:recipe_id>")
+class Similar_recipe_names(BaseModel):
+    dish_name: str
+
+@app.route("/recipe/<int:recipe_id>", methods=['GET', 'POST'])
 def recipe_page(recipe_id):
     recipe = Recipe.query.get_or_404(recipe_id)
+
     if current_user.is_authenticated:
+        prompt = "Give me two names of dishes similar to:" + recipe.dish_name
+        response = client.models.generate_content(model="gemini-2.0-flash", contents=prompt, config={
+        'response_mime_type': 'application/json',
+        'response_schema': list[Similar_recipe_names],})
+        similar_recipe_name_list: list[Similar_recipe_names] = response.parsed
+
         saved_status='unsaved'
         for saved_recipe in current_user.saved_recipes:
             if saved_recipe.id == recipe_id:
                 saved_status='saved'
-        return render_template('recipe.html', title=recipe.dish_name, post=recipe, saved_status = saved_status)
+        return render_template('recipe.html', title=recipe.dish_name, post=recipe, saved_status = saved_status, similar_recipe_name_list = similar_recipe_name_list)
     else: 
         return render_template('recipe.html', title=recipe.dish_name, post=recipe)
 
@@ -197,3 +215,31 @@ def unsave_recipe(recipe_id):
         flash('This recipe is already not in your saved recipes.', 'info')
     return redirect(request.referrer or url_for('saved_recipes')) #The request.referrer method was a good ChatGPT suggestion
 
+@app.route("/recipe/ai_recipe/<string:dish_name>", methods=['GET', 'POST'])
+@login_required
+def ai_recipe(dish_name):
+    prompt = "Generate one recipe for " + dish_name + ". Make sure that the recipe is safe to consume and relatively brief."
+    response = client.models.generate_content(model="gemini-2.0-flash", contents=prompt, config={
+        'response_mime_type': 'application/json',
+        'response_schema': Similar_recipes,
+    })
+    similar_recipe: Similar_recipes = response.parsed
+    form = RecipeForm()
+    if form.validate_on_submit():
+        if form.dish_picture.data: 
+            dish_picture_file = save_picture(form.dish_picture.data, True)
+        else:
+            dish_picture_file = 'default_recipe_pic.png' 
+        new_dish = Recipe(dish_name=form.recipe_name.data, time_needed=form.time_needed.data, serves=form.serves.data, ingredients=form.ingredients.data, recipe=form.instructions.data, image_file=dish_picture_file, author=current_user)
+        db.session.add(new_dish)
+        db.session.commit()
+        flash('Your new recipe has been posted!', 'success')
+        return redirect(url_for('user_recipes', username=current_user.username) )
+    elif request.method == 'GET':
+        form.recipe_name.data = dish_name
+        form.time_needed.data = similar_recipe.time_needed
+        form.serves.data =  similar_recipe.serves
+        form.ingredients.data = similar_recipe.ingredients
+        form.instructions.data= similar_recipe.instructions
+    return render_template('create_recipe.html', title='AI Recipe',
+                           form=form, legend='New AI-Generated Recipe')

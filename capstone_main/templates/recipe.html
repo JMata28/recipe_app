@@ -28,10 +28,18 @@
                         <dt class="col-sm-3">Ingredients</dt>
                         <dd class="col-sm-9">{{ post.ingredients }}</dd>
                         <dt class="col-sm-3">Instructions</dt>
-                        <dd class="col-sm-9">{{ post.recipe }}</dd> 
-                        <dt class="col-sm-3">Warnings</dt>
-                        <dd class="col-sm-9">{{ post.warnings }}</dd>
-                    </button>
+                        <dd class="col-sm-9">{{ post.recipe }}</dd>
+                        {% if current_user.is_authenticated %}
+                            <dt class="col-sm-3">Similar Recipes</dt>
+                            <dd class="col-sm-9">
+                                <div>
+                                    <a href="{{ url_for('ai_recipe', dish_name= similar_recipe_name_list[0].dish_name )}}">{{ similar_recipe_name_list[0].dish_name }}</a>
+                                </div>
+                                <div>
+                                    <a href="#">{{ similar_recipe_name_list[1].dish_name }}</a>
+                                </div>
+                            </dd>
+                        {% endif %}
                     </dl>
                     {% if current_user.is_authenticated %}
                         {% if saved_status == 'saved' %}
