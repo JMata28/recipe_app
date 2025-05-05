@@ -54,8 +54,10 @@ class UpdateAccountForm(FlaskForm):
                 raise ValidationError('That email is taken. Please choose a different one.')
             
 class RecipeForm(FlaskForm):
-    recipe_name = StringField('Recipe Name', validators=[DataRequired()])
-    time_needed = StringField('Time Needed for Preparation', validators=[DataRequired()])
+    recipe_name = StringField('Recipe name', validators=[DataRequired()])
+    description = TextAreaField('Description of recipe', validators=[DataRequired()])
+    dish_type = StringField('Dish type (Appetizer,Entrée,Snack,etc)')
+    time_needed = StringField('Time needed for preparation', validators=[DataRequired()])
     serves = IntegerField('Number of servings', validators=[DataRequired()])
     ingredients = StringField('Ingredients (please include amounts)', validators=[DataRequired()])
     instructions = TextAreaField('Recipe Instructions', validators=[DataRequired()]) #recipe
