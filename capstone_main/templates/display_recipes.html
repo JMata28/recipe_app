@@ -15,7 +15,7 @@
                 <a class="mr-2" href="{{ url_for('user_recipes', username=post.author.username) }}">{{ post.author.username }}</a>
                 <small class="text-muted">{{ post.date_posted.strftime('%Y-%m-%d') }}</small>
             </div>
-            <h2><a class="article-title" href="{{ url_for('recipe_page', recipe_id=post.id) }}">{{ post.dish_name }}</a></h2>
+            <h2><a class="article-title" href="{{ url_for('recipe_page', recipe_id=post.id) }}">{{ post.dish_name.title() }}</a></h2>
             <div class="card mb-3">
                 <div class="row g-0">
                   <div class="col-md-4">
@@ -23,12 +23,14 @@
                   </div>
                   <div class="card-body flex-grow-1 col-md-8 d-flex flex-column position-relative">
                         <dl class="row">
+                            <dt class="col-sm-3">Description</dt>
+                            <dd class="col-sm-9">{{ post.description }}</dd>
+                            <dt class="col-sm-3">Dish Type</dt>
+                            <dd class="col-sm-9">{{ post.dish_type }}</dd>
                             <dt class="col-sm-3">Time Needed</dt>
                             <dd class="col-sm-9">{{ post.time_needed }}</dd>
                             <dt class="col-sm-3">Serves</dt>
                             <dd class="col-sm-9">{{ post.serves}} Servings </dd>
-                            <dt class="col-sm-3">Ingredients</dt>
-                            <dd class="col-sm-9">{{ post.ingredients }}</dd>
                         </dl>
                   </div>
                 </div>

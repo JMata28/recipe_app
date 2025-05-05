@@ -99,7 +99,7 @@ def new_recipe():
             dish_picture_file = save_picture(form.dish_picture.data, True)
         else:
             dish_picture_file = 'default_recipe_pic.png' 
-        new_dish = Recipe(dish_name=form.recipe_name.data, time_needed=form.time_needed.data, serves=form.serves.data, ingredients=form.ingredients.data, recipe=form.instructions.data, image_file=dish_picture_file, author=current_user)
+        new_dish = Recipe(dish_name=form.recipe_name.data.lower(), description=form.description.data, dish_type = form.dish_type.data, time_needed=form.time_needed.data, serves=form.serves.data, ingredients=form.ingredients.data, recipe=form.instructions.data, image_file=dish_picture_file, author=current_user)
         db.session.add(new_dish)
         db.session.commit()
         flash('Your new recipe has been posted!', 'success')
@@ -108,7 +108,9 @@ def new_recipe():
                            form=form, legend='New Recipe')
 
 #Format for quering the Google Gemini in JSON format was obtained from Google Gemini Documentation: https://ai.google.dev/gemini-api/docs/structured-output?lang=python
-class Similar_recipes(BaseModel): 
+class Similar_recipes(BaseModel):
+  brief_description_of_dish: str
+  dish_type: str 
   time_needed: str
   serves: int
   ingredients: str
@@ -144,7 +146,9 @@ def update_recipe(recipe_id):
         abort(403)
     form = RecipeForm()
     if form.validate_on_submit():
-        recipe.dish_name = form.recipe_name.data
+        recipe.dish_name = form.recipe_name.data.lower()
+        recipe.description=form.description.data
+        recipe.dish_type = form.dish_type.data
         recipe.time_needed = form.time_needed.data
         recipe.serves = form.serves.data
         recipe.ingredients = form.ingredients.data
@@ -156,7 +160,9 @@ def update_recipe(recipe_id):
         flash('Your recipe has been updated!', 'success')
         return redirect(url_for('recipe_page', recipe_id=recipe.id))
     elif request.method == 'GET':
-        form.recipe_name.data = recipe.dish_name
+        form.recipe_name.data = recipe.dish_name.title()
+        form.description.data = recipe.description
+        form.dish_type.data = recipe.dish_type
         form.time_needed.data = recipe.time_needed
         form.serves.data =  recipe.serves
         form.ingredients.data = recipe.ingredients
@@ -230,13 +236,15 @@ def ai_recipe(dish_name):
             dish_picture_file = save_picture(form.dish_picture.data, True)
         else:
             dish_picture_file = 'default_recipe_pic.png' 
-        new_dish = Recipe(dish_name=form.recipe_name.data, time_needed=form.time_needed.data, serves=form.serves.data, ingredients=form.ingredients.data, recipe=form.instructions.data, image_file=dish_picture_file, author=current_user)
+        new_dish = Recipe(dish_name=form.recipe_name.data.lower(), description=form.description.data, dish_type = form.dish_type.data, time_needed=form.time_needed.data, serves=form.serves.data, ingredients=form.ingredients.data, recipe=form.instructions.data, image_file=dish_picture_file, author=current_user)
         db.session.add(new_dish)
         db.session.commit()
         flash('Your new recipe has been posted!', 'success')
         return redirect(url_for('user_recipes', username=current_user.username) )
     elif request.method == 'GET':
-        form.recipe_name.data = dish_name
+        form.recipe_name.data = dish_name.title()
+        form.description.data = similar_recipe.brief_description_of_dish
+        form.dish_type.data = similar_recipe.dish_type
         form.time_needed.data = similar_recipe.time_needed
         form.serves.data =  similar_recipe.serves
         form.ingredients.data = similar_recipe.ingredients
@@ -248,5 +256,5 @@ def ai_recipe(dish_name):
 def search_recipe():
     dish_name = request.form.get('dish_name') #to get the data from the search bar form item in the html
     page = request.args.get('page', 1, type=int)
-    recipes_found = Recipe.query.filter_by(dish_name=dish_name).order_by(Recipe.date_posted.asc()).paginate(page=page, per_page=5)
+    recipes_found = Recipe.query.filter_by(dish_name=dish_name.lower()).order_by(Recipe.date_posted.asc()).paginate(page=page, per_page=5)
     return render_template('display_recipes.html', title='Recipe Search Results', posts=recipes_found, user=current_user, recipe_type='search_recipes', dish_name_entered=dish_name)

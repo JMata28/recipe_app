@@ -13,7 +13,7 @@
               </div>
             {% endif %}
         </div>
-        <h2 class="article-title">{{ post.dish_name }}</h2>
+        <h2 class="article-title">{{ post.dish_name.title() }}</h2>
         <div class="card mb-3">
             <div class="row g-0">
                 <div class="col-md-4">
@@ -21,6 +21,10 @@
                 </div>
                 <div class="card-body flex-grow-1 col-md-8 d-flex flex-column position-relative">
                     <dl class="row">
+                        <dt class="col-sm-3">Description</dt>
+                        <dd class="col-sm-9">{{ post.description }} Servings </dd>
+                        <dt class="col-sm-3">Dish Type</dt>
+                        <dd class="col-sm-9">{{ post.dish_type }} Servings </dd>
                         <dt class="col-sm-3">Time Needed</dt>
                         <dd class="col-sm-9">{{ post.time_needed }}</dd>
                         <dt class="col-sm-3">Serves</dt>

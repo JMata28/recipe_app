@@ -19,6 +19,34 @@
                     {{ form.recipe_name(class="form-control form-control-lg") }}
                 {% endif %}
             </div>
+            <!-- Description Field -->
+            <div class="form-group">
+                {{ form.description.label(class="form-control-label") }}
+                {% if form.description.errors %}
+                    {{ form.description(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.description.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.description(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <!-- Dish Type Field -->
+            <div class="form-group">
+                {{ form.dish_type.label(class="form-control-label") }}
+                {% if form.dish_type.errors %}
+                    {{ form.dish_type(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.dish_type.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.dish_type(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
             <!-- Time Needed Field -->
             <div class="form-group">
                 {{ form.time_needed.label(class="form-control-label") }}

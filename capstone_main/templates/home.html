@@ -6,7 +6,7 @@
                 <div class="card" style="width: 18rem;">
                     <img src="{{ url_for('static', filename='recipe_pictures/' + post.image_file)}}" class="card-img-top .img-fluid" style="height:250px; object-fit: cover;" alt="...">
                     <div class="card-body">
-                        <h5 class="card-title">{{ post.dish_name}}</h5>
+                        <h5 class="card-title">{{ post.dish_name.title() }}</h5>
                         <h6 class="card-subtitle mb-2 text-muted">
                             <a href="{{ url_for('user_recipes', username=post.author.username)}}">Recipe by: {{ post.author.username }}</a>
                         </h6>
