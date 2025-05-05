@@ -25,3 +25,14 @@ login_manager.login_message_category = 'info'
 client = genai.Client(api_key=gemini_api_key)
 
 from capstone_main import routes
+
+'''
+    The database should be created separately, since it is not done automatically by the application, to ensure that all the data is structured with the lates db models. Commands to create database: 
+
+    in the terminal, run $python3 
+
+    from capstone_main import app, db
+    with app.app_context():
+        db.create_all()
+
+'''
