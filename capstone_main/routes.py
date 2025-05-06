@@ -4,7 +4,7 @@ import requests
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from capstone_main import app, db, bcrypt, client
-from capstone_main.models import User, Recipe
+from capstone_main.models import User, Recipe, Rating
 from capstone_main.forms import RegistrationForm, LoginForm, UpdateAccountForm, RecipeForm
 from flask_login import login_user, current_user, logout_user, login_required
 from pydantic import BaseModel
@@ -134,7 +134,16 @@ def recipe_page(recipe_id):
         for saved_recipe in current_user.saved_recipes:
             if saved_recipe.id == recipe_id:
                 saved_status='saved'
-        return render_template('recipe.html', title=recipe.dish_name, post=recipe, saved_status = saved_status, similar_recipe_name_list = similar_recipe_name_list)
+        
+        rated_status ='unrated'
+        for rated_recipe in current_user.ratings:
+            if rated_recipe.recipe_id == recipe_id:
+                rated_status = 'rated'
+        
+        avg_rating = db.session.query(db.func.avg(Rating.rating)).filter_by(recipe_id=recipe.id).scalar() #Note
+        rating_count = db.session.query(db.func.count(Rating.id)).filter_by(recipe_id=recipe.id).scalar()
+
+        return render_template('recipe.html', title=recipe.dish_name, post=recipe, saved_status = saved_status, rated_status = rated_status, avg_rating = avg_rating, rating_count = rating_count, similar_recipe_name_list = similar_recipe_name_list)
     else: 
         return render_template('recipe.html', title=recipe.dish_name, post=recipe)
 
@@ -258,3 +267,16 @@ def search_recipe():
     page = request.args.get('page', 1, type=int)
     recipes_found = Recipe.query.filter_by(dish_name=dish_name.lower()).order_by(Recipe.date_posted.asc()).paginate(page=page, per_page=5)
     return render_template('display_recipes.html', title='Recipe Search Results', posts=recipes_found, user=current_user, recipe_type='search_recipes', dish_name_entered=dish_name)
+
+@app.route("/rate_recipe/<int:recipe_id>", methods=['POST'])
+@login_required
+def rate_recipe(recipe_id):
+    number_of_stars = request.form.get('rating')
+    #recipe= Recipe.query.get_or_404(recipe_id)
+    new_rating = Rating(user_id=current_user.id, recipe_id=recipe_id, rating=number_of_stars)
+    db.session.add(new_rating)
+    db.session.commit()
+    flash('Rating submited!', 'success')
+    #print("New rating of: " + str(new_rating.rating) + " stars by user " + str(new_rating.user.username) + "for " + str(new_rating.recipe.dish_name.title()))
+
+    return redirect(request.referrer or url_for('home_page'))   #The request.referrer method was a good ChatGPT suggestion

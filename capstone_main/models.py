@@ -20,6 +20,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(60), nullable=False)
     recipes = db.relationship('Recipe', backref='author', lazy='select') #older versions of SQLAlchhemy used lazy=True instead of lazy='select'
     saved_recipes = db.relationship('Recipe', secondary=user_recipe, backref='users_who_saved')
+    ratings = db.relationship('Rating', back_populates='user', cascade='all, delete-orphan') #Note
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}, '{self.image_file}')"
@@ -37,7 +38,17 @@ class Recipe(db.Model):
     recipe = db.Column(db.Text, nullable=False)
     image_file = db.Column(db.String(120), nullable=False, default='default_recipe_pic.png')
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    ratings = db.relationship('Rating', back_populates='recipe', cascade='all, delete-orphan') #Note
 
     def __repr__(self):
         return f"Recipe('{self.dish_name}', '{self.date_posted}')"
 
+#Note
+class Rating(db.Model): 
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)  # 1 to 5
+    
+    user = db.relationship('User', back_populates='ratings')
+    recipe = db.relationship('Recipe', back_populates='ratings')

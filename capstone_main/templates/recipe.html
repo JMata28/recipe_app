@@ -14,6 +14,9 @@
             {% endif %}
         </div>
         <h2 class="article-title">{{ post.dish_name.title() }}</h2>
+        {% if current_user.is_authenticated %}
+        <h3>Average rating: {{avg_rating}} stars ({{rating_count}})</h3>
+        {% endif %}
         <div class="card mb-3">
             <div class="row g-0">
                 <div class="col-md-4">
@@ -46,6 +49,25 @@
                         {% endif %}
                     </dl>
                     {% if current_user.is_authenticated %}
+                        {% if rated_status == 'unrated' %}
+                        <!-- part of the HTML for 5-star rating obtained from https://codepen.io/abhijitmhasagar/pen/Jjrbeyy -->
+                            <form method="POST" action="{{ url_for('rate_recipe', recipe_id=post.id)}}">
+                                <div class=" d-flex justify-content-center mt-5">
+                                    <div class=" text-center mb-5">
+                                            <div class="rating"> 
+                                                <input type="radio" name="rating" value="5" id="5"><label for="5">☆</label> 
+                                                <input type="radio" name="rating" value="4" id="4"><label for="4">☆</label> 
+                                                <input type="radio" name="rating" value="3" id="3"><label for="3">☆</label> 
+                                                <input type="radio" name="rating" value="2" id="2"><label for="2">☆</label> 
+                                                <input type="radio" name="rating" value="1" id="1"><label for="1">☆</label> 
+                                            </div>
+                                            <div class="buttons  mt-0"> 
+                                                <button type="submit" class="btn btn-info px-4 py-1 rating-submit ">Submit</button> 
+                                            </div>
+                                    </div>
+                                </div>
+                            </form>
+                        {% endif %}
                         {% if saved_status == 'saved' %}
                         <!-- Unsave button -->
                         <form method="POST" action="{{ url_for('unsave_recipe', recipe_id=post.id) }}">
