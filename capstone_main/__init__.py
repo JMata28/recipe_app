@@ -17,6 +17,7 @@ gemini_api_key = os.getenv("GEMINI_API_KEY")
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secret_key
 app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
