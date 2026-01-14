@@ -125,7 +125,7 @@ def recipe_page(recipe_id):
 
     if current_user.is_authenticated:
         prompt = "Give me two names of dishes similar to:" + recipe.dish_name
-        response = client.models.generate_content(model="gemini-2.0-flash", contents=prompt, config={
+        response = client.models.generate_content(model="gemini-2.5-flash", contents=prompt, config={
         'response_mime_type': 'application/json',
         'response_schema': list[Similar_recipe_names],})
         similar_recipe_name_list: list[Similar_recipe_names] = response.parsed
@@ -234,7 +234,7 @@ def unsave_recipe(recipe_id):
 @login_required
 def ai_recipe(dish_name):
     prompt = "Generate one recipe for " + dish_name + ". Make sure that the recipe is safe to consume and relatively brief."
-    response = client.models.generate_content(model="gemini-2.0-flash", contents=prompt, config={
+    response = client.models.generate_content(model="gemini-2.5-flash", contents=prompt, config={
         'response_mime_type': 'application/json',
         'response_schema': Similar_recipes,
     })

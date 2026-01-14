@@ -1,6 +1,42 @@
 {% extends "layout.html" %}
 {% block content %}
-<img src="{{ url_for('static', filename='logo/DishData.png' )}}" class="img-fluid" alt="...">
-<h1>About Dish Data</h1>
-<p> It is very common for people, especially for young adults, to look up recipes on the internet. A simple Google search can quickly find hundreds or thousands of recipes for most popular dishes. However, there are multiple websites where people share and find recipes, which is good for variety, but also can present some downsides. For example, every website has their own formatting to present recipes, with some including long blog- like pages where the user must dig deep to find the information they are looking for. In addition, users may like recipes from different websites, so keeping track of them can be difficult. This Recipe Web Application addresses some of those issues by serving as a social media-type platform where users can create an account, share, rate, save, and look up recipes in a single platform.</p>
+
+<div class="container my-5">
+
+    <!-- Hero Image Section -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-10 text-center">
+            <img 
+                src="{{ url_for('static', filename='logo/DishData.png') }}" 
+                class="img-fluid shadow rounded-4"
+                alt="DishData Logo"
+                style="max-height: 350px;"
+            >
+        </div>
+    </div>
+
+    <!-- Text Content -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+
+            <h1 class="mb-4 fw-bold">About DishData</h1>
+
+            <p class="lead fs-4 mb-4">
+                Finding recipes online is easier than ever, but navigating cluttered pages and 
+                inconsistent formatting can make the experience frustrating.
+            </p>
+
+            <p class="fs-5 text-muted">
+              DishData solves this by providing a clean, social platform where users can create accounts, 
+            share recipes, rate dishes, save favorites, and discover new meals—all presented in a consistent, 
+            standardized format. Every recipe follows the same clear structure, making information easy to 
+            find and compare. In addition, DishData offers AI-generated recipe suggestions in the same format, 
+            which users can freely edit and customize before saving or sharing.
+            </p>
+
+        </div>
+    </div>
+
+</div>
+
 {% endblock content %}
